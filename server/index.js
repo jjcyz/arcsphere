@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const { EVENT_PLANNING_TEMPLATE } = require('./agent');
 require('dotenv').config();
 
 const app = express();
@@ -10,12 +11,11 @@ app.use(cors());
 app.use(express.json());
 
 const OLLAMA_BASE_URL = 'http://localhost:11434';
-const TIMEOUT = 120000; // Increased to 120 seconds timeo
+const TIMEOUT = 120000;
 
-// Store active requests
 const activeRequests = new Map();
+const memory = new Map();
 
-// Format conversation history for the model
 const formatConversationHistory = (history) => {
   if (!history || !Array.isArray(history)) return '';
 
@@ -23,6 +23,57 @@ const formatConversationHistory = (history) => {
     const role = msg.role === 'user' ? 'Human' : 'Assistant';
     return `${role}: ${msg.content}`;
   }).join('\n');
+};
+
+const extractEventDetails = (message) => {
+  const details = {
+    activity: null,
+    guests: null,
+    dateRange: null,
+    hobbies: null,
+    location: null,
+    userBase: null,
+  };
+
+  const lowerMessage = message.toLowerCase();
+
+  if (/indoor|outdoor/.test(lowerMessage)) {
+    details.activity = /indoor/.test(lowerMessage) ? 'indoor' : 'outdoor';
+  }
+  if (/rock climbing|climbing/i.test(lowerMessage)) {
+    details.activity = 'outdoor'; // Assume outdoor for rock climbing
+    details.hobbies = 'rock climbing';
+  }
+  if (/\d+\s*(people|guests|friends)/i.test(message)) {
+    details.guests = message.match(/\d+\s*(people|guests|friends)/i)[0];
+  } else if (/family|friends|colleagues/i.test(lowerMessage)) {
+    details.guests = lowerMessage.match(/family|friends|colleagues/i)[0];
+  }
+  if (/(january|february|march|april|may|june|july|august|september|october|november|december|\d{1,2}(st|nd|rd|th)?\s+to\s+\d{1,2}(st|nd|rd|th)?)/i.test(message)) {
+    details.dateRange = message.match(/(january|february|march|april|may|june|july|august|september|october|november|december|\d{1,2}(st|nd|rd|th)?\s+to\s+\d{1,2}(st|nd|rd|th)?)/i)[0];
+  }
+  if (/hiking|climbing|skiing|cycling|running|art|cooking/i.test(lowerMessage)) {
+    details.hobbies = lowerMessage.match(/hiking|climbing|skiing|cycling|running|art|cooking/i)[0];
+  }
+  if (/in\s+[\w\s]+(city|town|state|province|country)/i.test(message)) {
+    details.location = message.match(/in\s+[\w\s]+(city|town|state|province|country)/i)[0].replace('in ', '');
+  }
+  if (/based\s+in\s+[\w\s]+/i.test(message)) {
+    details.userBase = message.match(/based\s+in\s+[\w\s]+/i)[0].replace('based in ', '');
+  }
+
+  return details;
+};
+
+const generateMissingQuestions = (details) => {
+  const questions = [];
+  if (!details.activity) questions.push("Is this an indoor or outdoor activity?");
+  if (!details.guests) questions.push("Who are you inviting, or how many guests are you expecting?");
+  if (!details.dateRange) questions.push("What date range are you planning this event for?");
+  if (!details.hobbies) questions.push("What are your hobbies or interests related to this event?");
+  if (!details.location) questions.push("Where are you planning to hold this event?");
+  if (!details.userBase) questions.push("Where are you based?");
+  return questions.length ? `\nPlease provide more details: ${questions.join(' ')}` : '';
 };
 
 app.post('/api/chat', async (req, res) => {
@@ -43,19 +94,26 @@ app.post('/api/chat', async (req, res) => {
 
     console.log('Received request with:', { model, message, historyLength: history?.length });
 
-    // Format the conversation history
+    // Initialize memory
+    let eventDetails = memory.get(requestId) || {};
+    const newDetails = extractEventDetails(message);
+    eventDetails = { ...eventDetails, ...newDetails };
+    memory.set(requestId, eventDetails);
+
     const conversationHistory = formatConversationHistory(history);
 
-    // Create the prompt with context
+    const templateWithQuery = EVENT_PLANNING_TEMPLATE.replace('{query}', message);
+
+    const missingQuestions = generateMissingQuestions(eventDetails);
     const prompt = conversationHistory
-      ? `${conversationHistory}\nHuman: ${message}\nAssistant:`
-      : `Human: ${message}\nAssistant:`;
+      ? `${templateWithQuery}\nCurrent event details: ${JSON.stringify(eventDetails)}\n${conversationHistory}\nHuman: ${message}\nAssistant:${missingQuestions}`
+      : `${templateWithQuery}\nCurrent event details: ${JSON.stringify(eventDetails)}\nAssistant:${missingQuestions}`;
 
     // Make request to Ollama with responseType: 'stream'
     const response = await axios.post(`${OLLAMA_BASE_URL}/api/generate`, {
       model: model,
       prompt: prompt,
-      context: [], // You might want to implement context management here
+      context: [],
       options: {
         temperature: 0,
         top_p: 0.7,
@@ -99,7 +157,7 @@ app.post('/api/chat', async (req, res) => {
     // When the stream ends
     response.data.on('end', () => {
       activeRequests.delete(requestId);
-      res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+      res.write(`data: ${JSON.stringify({ done: true, eventDetails })}\n\n`);
       res.end();
     });
 

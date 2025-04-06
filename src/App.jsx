@@ -1,22 +1,29 @@
-import { useState, useRef, useEffect } from 'react'
-import Sidebar from './components/Sidebar'
+import { useState, useRef, useEffect } from 'react';
 
 function ChatbotWindow({ isOpen, onClose, selectedModel, setSelectedModel }) {
   const [messages, setMessages] = useState([
-    { role: 'ai', content: "Hi! I'm DeepSeek. How can I help you today? 💻" }
-  ])
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [loadingStatus, setLoadingStatus] = useState('')
-  const [currentResponse, setCurrentResponse] = useState('')
-  const [error, setError] = useState(null)
-  const abortControllerRef = useRef(null)
-  const requestIdRef = useRef(null)
-  const messagesEndRef = useRef(null)
+    { role: 'ai', content: "Hi! I'm Arc'BOT, your personal event coordinator. Let's plan a community meetup! What activity are you thinking of?" }
+  ]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState('');
+  const [currentResponse, setCurrentResponse] = useState('');
+  const [error, setError] = useState(null);
+  const [eventDetails, setEventDetails] = useState({
+    activity: null,
+    guests: null,
+    dateRange: null,
+    hobbies: null,
+    location: null,
+    userBase: null,
+  });
+  const abortControllerRef = useRef(null);
+  const requestIdRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages, currentResponse])
+  }, [messages, currentResponse]);
 
   const cleanResponse = (text) => {
     // Remove unwanted tags and escape sequences
@@ -34,16 +41,16 @@ function ChatbotWindow({ isOpen, onClose, selectedModel, setSelectedModel }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!input.trim()) return
+    e.preventDefault();
+    if (!input.trim()) return;
 
-    const userMessage = { role: 'user', content: input }
-    setMessages(prev => [...prev, userMessage])
-    setInput('')
-    setIsLoading(true)
-    setLoadingStatus('Processing your request...')
-    setCurrentResponse('')
-    setError(null)
+    const userMessage = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
+    setLoadingStatus('Processing your request...');
+    setCurrentResponse('');
+    setError(null);
 
     abortControllerRef.current = new AbortController();
     requestIdRef.current = Date.now().toString();
@@ -90,6 +97,9 @@ function ChatbotWindow({ isOpen, onClose, selectedModel, setSelectedModel }) {
               }
               if (data.done) {
                 setMessages(prev => [...prev, { role: 'ai', content: cleanResponse(fullResponse) }]);
+                if (data.eventDetails) {
+                  setEventDetails(prev => ({ ...prev, ...data.eventDetails }));
+                }
                 setIsLoading(false);
                 setLoadingStatus('');
                 setCurrentResponse('');
@@ -140,6 +150,20 @@ function ChatbotWindow({ isOpen, onClose, selectedModel, setSelectedModel }) {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
+        {/* Display collected event details */}
+        <div className="text-sm text-gray-400 mb-4">
+          <p><strong>Event Details:</strong></p>
+          <ul>
+            <li>Activity: {eventDetails.activity || 'Not specified'}</li>
+            <li>Guests: {eventDetails.guests || 'Not specified'}</li>
+            <li>Date Range: {eventDetails.dateRange || 'Not specified'}</li>
+            <li>Hobbies/Interests: {eventDetails.hobbies || 'Not specified'}</li>
+            <li>Location: {eventDetails.location || 'Not specified'}</li>
+            <li>Your Base: {eventDetails.userBase || 'Not specified'}</li>
+          </ul>
+        </div>
+
+        {/* Chat messages */}
         {messages.map((message, index) => (
           <div
             key={index}
