@@ -3,16 +3,19 @@ import Sidebar from './components/Sidebar'
 import SlideOutButton from './components/SlideOutButton'
 import ChatbotWindow from './components/ChatbotWindow'
 import EventPlannerAgent from './components/EventPlannerAgent'
+import GrantProgramAgent from './components/GrantProgramAgent'
 import './App.css'
 
 function App() {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [isEventPlannerOpen, setIsEventPlannerOpen] = useState(false);
+  const [isGrantProgramOpen, setIsGrantProgramOpen] = useState(false);
 
   const toggleChatbot = () => {
     setIsChatbotOpen(!isChatbotOpen);
     if (!isChatbotOpen) {
       setIsEventPlannerOpen(false);
+      setIsGrantProgramOpen(false);
     }
   };
 
@@ -20,6 +23,15 @@ function App() {
     setIsEventPlannerOpen(!isEventPlannerOpen);
     if (!isEventPlannerOpen) {
       setIsChatbotOpen(false);
+      setIsGrantProgramOpen(false);
+    }
+  };
+
+  const toggleGrantProgram = () => {
+    setIsGrantProgramOpen(!isGrantProgramOpen);
+    if (!isGrantProgramOpen) {
+      setIsChatbotOpen(false);
+      setIsEventPlannerOpen(false);
     }
   };
 
@@ -31,6 +43,12 @@ function App() {
         onClick={toggleEventPlanner}
       >
         Event Planner
+      </button>
+      <button
+        className="fixed left-4 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-600 transition-colors text-sm mt-16"
+        onClick={toggleGrantProgram}
+      >
+        Grant Program
       </button>
 
     <div className="main-container">
@@ -72,6 +90,7 @@ function App() {
 
     <ChatbotWindow isOpen={isChatbotOpen} onClose={() => setIsChatbotOpen(false)} />
     <EventPlannerAgent isOpen={isEventPlannerOpen} onClose={() => setIsEventPlannerOpen(false)} />
+    <GrantProgramAgent isOpen={isGrantProgramOpen} onClose={() => setIsGrantProgramOpen(false)} />
     </div>
   )
 }
