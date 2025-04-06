@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-primary text-white min-h-screen;
+  }
+}
+
+@layer components {
+  .chat-message {
+    @apply p-4 rounded-lg mb-4;
+  }
+
+  .user-message {
+    @apply bg-accent ml-4;
+  }
+
+  .ai-message {
+    @apply bg-secondary mr-4;
+  }
+
+  .input-container {
+    @apply fixed bottom-0 left-0 right-0 p-4 bg-primary border-t border-accent;
+  }
+
+  .chat-input {
+    @apply w-full p-2 rounded-lg bg-accent text-white border border-gray-600 focus:outline-none focus:border-blue-500;
+  }
+}
