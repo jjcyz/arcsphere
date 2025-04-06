@@ -161,7 +161,7 @@ const ChatBot = () => {
           margin: 0 auto;
           background-color: #121212;
           color: white;
-          font-family: 'Inter', sans-serif;
+          font-family: Arial, sans-serif, Tahoma;;
         }
 
         .chatbot-messages {

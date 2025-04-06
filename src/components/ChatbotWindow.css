@@ -23,7 +23,7 @@
   justify-content: space-between; /* justify-between */
   align-items: center; /* items-center */
   padding: 1rem; /* p-6 */
-  background-color: #111827; /* bg-gray-900 */
+  background-color: black; /* bg-gray-900 */
   border-bottom: 1px solid #1f2937; /* border-b border-gray-800 */
 }
 
@@ -59,7 +59,7 @@
 }
 
 .user-message {
-  background-color: #2563eb; /* bg-blue-600 */
+  background-color: dark blue; /* bg-blue-600 */
   margin-left: auto; /* ml-auto */
 }
 
@@ -121,8 +121,8 @@
   left: 0; /* Align to left edge */
   right: 0; /* Align to right edge */
   padding: 1rem; /* p-6 */
-  background-color: #111827; /* bg-gray-900 */
-  border-top: 1px solid #1f2937; /* border-t border-gray-800 */
+  background-color: black; /* bg-gray-900 */
+  border-top: 1px solid black; /* border-t border-gray-800 */
   z-index: 10; /* Ensure it stays on top */
 }
 
