@@ -4,18 +4,21 @@ import SlideOutButton from './components/SlideOutButton'
 import ChatbotWindow from './components/ChatbotWindow'
 import EventPlannerAgent from './components/EventPlannerAgent'
 import GrantProgramAgent from './components/GrantProgramAgent'
+import CommunityConnectorAgent from './components/CommunityConnectorAgent'
 import './App.css'
 
 function App() {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [isEventPlannerOpen, setIsEventPlannerOpen] = useState(false);
   const [isGrantProgramOpen, setIsGrantProgramOpen] = useState(false);
+  const [isCommunityConnectorOpen, setIsCommunityConnectorOpen] = useState(false);
 
   const toggleChatbot = () => {
     setIsChatbotOpen(!isChatbotOpen);
     if (!isChatbotOpen) {
       setIsEventPlannerOpen(false);
       setIsGrantProgramOpen(false);
+      setIsCommunityConnectorOpen(false);
     }
   };
 
@@ -24,6 +27,7 @@ function App() {
     if (!isEventPlannerOpen) {
       setIsChatbotOpen(false);
       setIsGrantProgramOpen(false);
+      setIsCommunityConnectorOpen(false);
     }
   };
 
@@ -32,6 +36,16 @@ function App() {
     if (!isGrantProgramOpen) {
       setIsChatbotOpen(false);
       setIsEventPlannerOpen(false);
+      setIsCommunityConnectorOpen(false);
+    }
+  };
+
+  const toggleCommunityConnector = () => {
+    setIsCommunityConnectorOpen(!isCommunityConnectorOpen);
+    if (!isCommunityConnectorOpen) {
+      setIsChatbotOpen(false);
+      setIsEventPlannerOpen(false);
+      setIsGrantProgramOpen(false);
     }
   };
 
@@ -49,6 +63,12 @@ function App() {
         onClick={toggleGrantProgram}
       >
         Grant Program
+      </button>
+      <button
+        className="fixed left-4 top-1/2 transform -translate-y-1/2 bg-gray-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-500 transition-colors text-sm mt-32"
+        onClick={toggleCommunityConnector}
+      >
+        Community Connector
       </button>
 
     <div className="main-container">
@@ -68,8 +88,8 @@ function App() {
           <main className="max-w-4xl mx-auto">
             <h1 className="heading">Welcome to the 'Sphere!</h1>
             <p className="paragraph">
-              Helping Arc'teryx partners build communities orbiting around seeking support,
-              answering questions, and planning meetups.
+              Helping Arc'teryx long-standing strategic partner or ambassadors to build communities orbiting
+              around seeking support, answering questions, and planning meetups.
             </p>
 
             <div className="relative max-w-2xl mx-auto">
@@ -91,6 +111,7 @@ function App() {
     <ChatbotWindow isOpen={isChatbotOpen} onClose={() => setIsChatbotOpen(false)} />
     <EventPlannerAgent isOpen={isEventPlannerOpen} onClose={() => setIsEventPlannerOpen(false)} />
     <GrantProgramAgent isOpen={isGrantProgramOpen} onClose={() => setIsGrantProgramOpen(false)} />
+    <CommunityConnectorAgent isOpen={isCommunityConnectorOpen} onClose={() => setIsCommunityConnectorOpen(false)} />
     </div>
   )
 }
