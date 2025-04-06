@@ -11,7 +11,7 @@
 
 @layer components {
   .chat-message {
-    @apply p-3 rounded-lg mb-3 max-w-[80%];
+    @apply p-4 rounded-lg mb-4 max-w-[80%];
   }
 
   .user-message {
@@ -23,7 +23,7 @@
   }
 
   .message-content {
-    @apply text-sm text-white whitespace-pre-wrap break-words;
+    @apply text-lg text-white whitespace-pre-wrap break-words;
   }
 
   .error-message {
