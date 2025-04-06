@@ -68,9 +68,10 @@ export default function ChatbotWindow({ isOpen, onClose }) {
     //     }),
     //   });
 
-    const groq = new Groq({ apiKey: import.meta.env.VITE_GROQ_API_KEY,
+    const groq = new Groq({
+      apiKey: import.meta.env.VITE_GROQ_API_KEY,
       dangerouslyAllowBrowser: true
-     });
+    });
 
     async function getGroqChatCompletion() {
       return groq.chat.completions.create({
