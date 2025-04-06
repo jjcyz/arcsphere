@@ -9,6 +9,7 @@ function App() {
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [loadingStatus, setLoadingStatus] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -18,8 +19,10 @@ function App() {
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
+    setLoadingStatus('Processing your request...')
 
     try {
+      setLoadingStatus('Connecting to the model...')
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -32,6 +35,7 @@ function App() {
         }),
       })
 
+      setLoadingStatus('Generating response...')
       const data = await response.json()
       setMessages(prev => [...prev, { role: 'ai', content: data.response }])
     } catch (error) {
@@ -39,6 +43,7 @@ function App() {
       setMessages(prev => [...prev, { role: 'ai', content: 'Sorry, there was an error processing your request.' }])
     } finally {
       setIsLoading(false)
+      setLoadingStatus('')
     }
   }
 
@@ -60,8 +65,16 @@ function App() {
             <ChatMessage key={index} message={message} />
           ))}
           {isLoading && (
-            <div className="chat-message ai-message">
-              <div className="animate-pulse">🧠 Processing...</div>
+            <div className="chat-message ai-message p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">
+                  {loadingStatus}
+                </div>
+              </div>
+              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                This may take a few moments as the model processes your request locally...
+              </div>
             </div>
           )}
         </div>
