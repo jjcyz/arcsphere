@@ -9,7 +9,7 @@ const port = process.env.PORT || 5001;
 app.use(cors());
 app.use(express.json());
 
-const OLLAMA_BASE_URL = 'http://localhost:11434';s
+const OLLAMA_BASE_URL = 'http://localhost:11434';
 const TIMEOUT = 120000; // Increased to 120 seconds timeo
 
 // Store active requests
