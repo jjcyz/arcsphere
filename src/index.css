@@ -1,41 +1,63 @@
-@import "tailwindcss";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  body {
-    @apply bg-gray-900 text-white min-h-screen m-0 p-0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  }
+/* Base styles */
+body {
+  background-color: #111827; /* bg-gray-900 */
+  color: white;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-@layer components {
-  .chat-message {
-    @apply p-4 rounded-lg mb-4 max-w-[80%];
-  }
+/* Component styles */
+.chat-message {
+  padding: 1rem; /* p-4 */
+  border-radius: 0.5rem; /* rounded-lg */
+  margin-bottom: 1rem; /* mb-4 */
+  max-width: 80%;
+}
 
-  .user-message {
-    @apply bg-blue-600 ml-auto;
-  }
+.user-message {
+  background-color: #2563eb; /* bg-blue-600 */
+  margin-left: auto; /* ml-auto */
+}
 
-  .ai-message {
-    @apply bg-gray-800 mr-auto;
-  }
+.ai-message {
+  background-color: #1f2937; /* bg-gray-800 */
+  margin-right: auto; /* mr-auto */
+}
 
-  .message-content {
-    @apply text-lg text-white whitespace-pre-wrap break-words;
-  }
+.message-content {
+  font-size: 1.125rem; /* text-lg */
+  color: white;
+  white-space: pre-wrap;
+  word-break: break-word; /* break-words */
+}
 
-  .error-message {
-    @apply bg-red-900/20 border border-red-800;
-  }
+.error-message {
+  background-color: rgba(127, 29, 29, 0.2); /* bg-red-900/20 */
+  border: 1px solid #991b1b; /* border-red-800 */
+}
 
-  .input-container {
-    @apply fixed bottom-0 left-0 right-0 p-4 bg-gray-800 border-t border-gray-700;
-  }
+.input-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem; /* p-4 */
+  background-color: #1f2937; /* bg-gray-800 */
+  border-top: 1px solid #374151; /* border-gray-700 */
+}
 
-  .chat-input {
-    @apply w-full p-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-blue-500;
-  }
+.chat-input {
+  width: 100%;
+  padding: 0.5rem; /* p-2 */
+  border-radius: 0.5rem; /* rounded-lg */
+  background-color: #374151; /* bg-gray-700 */
+  color: white;
+  border: 1px solid #4b5563; /* border-gray-600 */
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: #3b82f6; /* focus:border-blue-500 */
 }
