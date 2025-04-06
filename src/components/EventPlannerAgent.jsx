@@ -2,25 +2,20 @@ import { useState, useRef, useEffect } from 'react';
 import Groq from "groq-sdk";
 import './ChatbotWindow.css';
 
-const EVENT_PLANNING_TEMPLATE = `
-You are an AI event coordinator that helps Arc\’teryx grant recipients plan meetups with those in their local community involving recreational activities. The user will ask you about an event that they are planning. Be on the lookout for the following information in the user\’s query:
-
-- activity (indoor or outdoor)
-- guests (who and/or how many)
-- date range
-- their hobbies/interests
-- exact or approximate location
-- where the user is based
-
-Ask the user about any missing information and store it in memory, along with the information given in the user\’s query.
-
-`
-
 export default function EventPlannerAgent({ isOpen, onClose }) {
   const [messages, setMessages] = useState([
     {
       role: 'system',
-      content: EVENT_PLANNING_TEMPLATE
+      content: `You are Arc'Event, a specialized AI assistant for Arc'teryx partners to plan community events.
+      Your role is to help users plan, organize, and promote events for the Arc'teryx community.
+      You can help with:
+      - Suggesting event ideas based on location, season, and community interests
+      - Creating event timelines and checklists
+      - Recommending venues and activities
+      - Providing tips for promoting events
+      - Offering guidance on logistics and coordination
+
+      Always be concise, practical, and focused on outdoor/community activities that align with Arc'teryx values.`
     },
     {
       role: 'ai',
@@ -94,7 +89,7 @@ export default function EventPlannerAgent({ isOpen, onClose }) {
         messages: formattedMessages,
         model: "llama3-70b-8192",
         max_tokens: 1024, // Increased max tokens for more detailed responses
-        temperature: 0 // Low temperature for more deterministic responses
+        temperature: 0.7 // Low temperature for more deterministic responses
       });
 
       console.log(response.choices[0]?.message?.content || "");

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import Sidebar from './components/Sidebar'
 import SlideOutButton from './components/SlideOutButton'
 import ChatbotWindow from './components/ChatbotWindow'
 import EventPlannerAgent from './components/EventPlannerAgent'
