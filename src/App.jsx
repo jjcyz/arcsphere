@@ -18,6 +18,21 @@ function ChatbotWindow({ isOpen, onClose, selectedModel, setSelectedModel }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, currentResponse])
 
+  const cleanResponse = (text) => {
+    // Remove unwanted tags and escape sequences
+    let cleaned = text
+      .replace(/<think>/g, '').replace(/<\/think>/g, '')
+      .replace(/\\\(.*?boxed{(.*?)}\\\)/g, '$1')
+      .replace(/\\\((.*?)\\\)/g, '$1')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/```(.*?)```/g, '$1');
+    
+    // Preserve paragraph breaks and normalize spacing
+    cleaned = cleaned.replace(/\n{2,}/g, '\n\n');
+    cleaned = cleaned.replace(/[ \t]+/g, ' ').trim();
+    return cleaned;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!input.trim()) return
@@ -71,10 +86,10 @@ function ChatbotWindow({ isOpen, onClose, selectedModel, setSelectedModel }) {
               const data = JSON.parse(line.slice(6));
               if (data.response) {
                 fullResponse += data.response;
-                setCurrentResponse(fullResponse);
+                setCurrentResponse(cleanResponse(fullResponse));
               }
               if (data.done) {
-                setMessages(prev => [...prev, { role: 'ai', content: fullResponse }]);
+                setMessages(prev => [...prev, { role: 'ai', content: cleanResponse(fullResponse) }]);
                 setIsLoading(false);
                 setLoadingStatus('');
                 setCurrentResponse('');

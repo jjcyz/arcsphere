@@ -57,7 +57,7 @@ app.post('/api/chat', async (req, res) => {
       prompt: prompt,
       context: [], // You might want to implement context management here
       options: {
-        temperature: 0.5,
+        temperature: 0,
         top_p: 0.7,
         repeat_penalty: 1.2,
         top_k: 40,
