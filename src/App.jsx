@@ -88,7 +88,7 @@ function App() {
           <main className="max-w-4xl mx-auto">
             <h1 className="heading">Welcome to the 'Sphere!</h1>
             <p className="paragraph">
-              Helping Arc'teryx long-standing strategic partner or ambassadors to build communities orbiting
+              Helping Arc'teryx long-standing strategic partners and ambassadors to build communities orbiting
               around seeking support, answering questions, and planning meetups.
             </p>
 
