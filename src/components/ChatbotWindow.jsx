@@ -4,6 +4,7 @@ import './ChatbotWindow.css';
 
 export default function ChatbotWindow({ isOpen, onClose }) {
   const [messages, setMessages] = useState([
+    { role: 'system', content: "You are a helpful assistant for Arc'teryx partners. You provide concise, informative answers." },
     { role: 'ai', content: "Hello! I'm Arc'BOT, an AI agent built with Groq's LLM. How can I help you today?" }
   ])
   const [input, setInput] = useState('')
@@ -50,51 +51,38 @@ export default function ChatbotWindow({ isOpen, onClose }) {
     requestIdRef.current = Date.now().toString();
 
     try {
-    //   setLoadingStatus('Connecting to the model...')
-    //   const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
-    //     },
-    //     body: JSON.stringify({
-    //      "messages": [{
-    // "role": "user",
-    // "content": "Explain the importance of fast language models"
-    //     }],
-    //       model: "llama-3.3-70b-versatile",
-    //       // history: messages,
-    //       // requestId: requestIdRef.current,
-    //     }),
-    //   });
-
-    const groq = new Groq({
-      apiKey: import.meta.env.VITE_GROQ_API_KEY,
-      dangerouslyAllowBrowser: true
-    });
-
-    async function getGroqChatCompletion() {
-      return groq.chat.completions.create({
-        messages: [
-          {
-            role: "user",
-            content: input,
-          },
-        ],
-        model: "llama-3.3-70b-versatile",
+      const groq = new Groq({
+        apiKey: import.meta.env.VITE_GROQ_API_KEY,
+        dangerouslyAllowBrowser: true
       });
-    }
 
-    const response = await getGroqChatCompletion();
+      // Format messages for the API
+      const formattedMessages = messages.map(msg => ({
+        role: msg.role === 'user' ? 'user' : (msg.role === 'ai' ? 'assistant' : 'system'),
+        content: msg.content
+      }));
+
+      // Add the current user message
+      formattedMessages.push({
+        role: 'user',
+        content: input
+      });
+
+      setLoadingStatus('Getting response from Groq...');
+
+      const response = await groq.chat.completions.create({
+        messages: formattedMessages,
+        model: "llama3-70b-8192",
+        max_tokens: 1024, // Increased max tokens for more detailed responses
+        temperature: 0.7 // Low temperature for more deterministic responses
+      });
 
       console.log(response.choices[0]?.message?.content || "");
 
-      const reader = response.choices[0]?.message?.content;
-      const decoder = new TextDecoder();
-      let fullResponse = reader;
+      const assistantResponse = response.choices[0]?.message?.content;
+      const fullResponse = cleanResponse(assistantResponse);
 
-
-      setMessages(prev => [...prev, { role: 'ai', content: cleanResponse(fullResponse) }]);
+      setMessages(prev => [...prev, { role: 'ai', content: fullResponse }]);
       setIsLoading(false);
       setLoadingStatus('');
       setCurrentResponse('');
@@ -142,7 +130,7 @@ export default function ChatbotWindow({ isOpen, onClose }) {
         }
       >
       <div className="messages-container">
-        {messages.map((message, index) => (
+        {messages.filter(msg => msg.role !== 'system').map((message, index) => (
           <div
             key={index}
             className={`chat-message ${message.role === 'user' ? 'user-message' : 'ai-message'}`}
