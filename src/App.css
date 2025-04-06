@@ -1,0 +1,11 @@
+.arcbot_button {
+	/* "fixed bg-black text-white px-8 py-4 rounded-lg shadow-lg hover:bg-gray-900 transition-colors text-xl" */
+
+	position: fixed;
+	background-color: black;
+	color: white;
+	padding: 8px;
+	padding-left: 16px;
+	padding-right: 16px;
+
+}

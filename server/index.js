@@ -12,6 +12,9 @@ app.use(express.json());
 const OLLAMA_BASE_URL = 'http://localhost:11434';
 const TIMEOUT = 120000; // Increased to 120 seconds timeo
 
+console.log(process.env.VITE_GROQ_API_KEY);
+console.log("hello");
+
 // Store active requests
 const activeRequests = new Map();
 
@@ -51,27 +54,25 @@ app.post('/api/chat', async (req, res) => {
       ? `${conversationHistory}\nHuman: ${message}\nAssistant:`
       : `Human: ${message}\nAssistant:`;
 
+      console.log(process.env.VITE_GROQ_API_KEY);
+      console.log("hello");
+
     // Make request to Ollama with responseType: 'stream'
-    const response = await axios.post(`${OLLAMA_BASE_URL}/api/generate`, {
-      model: model,
-      prompt: prompt,
-      context: [], // You might want to implement context management here
-      options: {
-        temperature: 0,
-        top_p: 0.7,
-        repeat_penalty: 1.2,
-        top_k: 40,
-        num_ctx: 2048,
-        num_thread: 4,
-        num_gpu: 1,
-        num_batch: 8,
-        stop: ["Human:", "Assistant:"],
-        seed: 42
-      }
+    const response = await axios.post(`https://api.groq.com/openai/v1/chat/completions`, {
+        "model": "deepseek-r1-distill-qwen-32b",
+        "headers": {
+            "Authorization": `Bearer ${process.env.VITE_GROQ_API_KEY}`
+        },
+        "messages": [{
+            "role": "user",
+            "content": "Explain the importance of fast language models"
+        }]
     }, {
       timeout: TIMEOUT,
       responseType: 'stream'
     });
+    console.log(process.env.VITE_GROQ_API_KEY);
+    console.log("hello");
 
     // Handle the streaming response
     response.data.on('data', chunk => {

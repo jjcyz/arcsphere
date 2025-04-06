@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import Sidebar from './components/Sidebar'
 import SlideOutButton from './components/SlideOutButton'
+import Groq from "groq-sdk";
+import './App.css'
 
 function ChatbotWindow({ isOpen, onClose, selectedModel, setSelectedModel }) {
   const [messages, setMessages] = useState([
@@ -27,7 +29,7 @@ function ChatbotWindow({ isOpen, onClose, selectedModel, setSelectedModel }) {
       .replace(/\\\((.*?)\\\)/g, '$1')
       .replace(/\*\*(.*?)\*\*/g, '$1')
       .replace(/```(.*?)```/g, '$1');
-    
+
     // Preserve paragraph breaks and normalize spacing
     cleaned = cleaned.replace(/\n{2,}/g, '\n\n');
     cleaned = cleaned.replace(/[ \t]+/g, ' ').trim();
@@ -50,60 +52,54 @@ function ChatbotWindow({ isOpen, onClose, selectedModel, setSelectedModel }) {
     requestIdRef.current = Date.now().toString();
 
     try {
-      setLoadingStatus('Connecting to the model...')
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: input,
-          model: selectedModel,
-          history: messages,
-          requestId: requestIdRef.current,
-        }),
-        signal: abortControllerRef.current.signal,
+    //   setLoadingStatus('Connecting to the model...')
+    //   const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
+    //     },
+    //     body: JSON.stringify({
+    //      "messages": [{
+    // "role": "user",
+    // "content": "Explain the importance of fast language models"
+    //     }],
+    //       model: "llama-3.3-70b-versatile",
+    //       // history: messages,
+    //       // requestId: requestIdRef.current,
+    //     }),
+    //   });
+
+    const groq = new Groq({ apiKey: import.meta.env.VITE_GROQ_API_KEY,
+      dangerouslyAllowBrowser: true
+     });
+
+    async function getGroqChatCompletion() {
+      return groq.chat.completions.create({
+        messages: [
+          {
+            role: "user",
+            content: input,
+          },
+        ],
+        model: "llama-3.3-70b-versatile",
       });
+    }
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Server error: ${response.status}`);
-      }
+    const response = await getGroqChatCompletion();
 
-      const reader = response.body.getReader();
+      console.log(response.choices[0]?.message?.content || "");
+
+      const reader = response.choices[0]?.message?.content;
       const decoder = new TextDecoder();
-      let fullResponse = '';
+      let fullResponse = reader;
 
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
 
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
+      setMessages(prev => [...prev, { role: 'ai', content: cleanResponse(fullResponse) }]);
+      setIsLoading(false);
+      setLoadingStatus('');
+      setCurrentResponse('');
 
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              if (data.response) {
-                fullResponse += data.response;
-                setCurrentResponse(cleanResponse(fullResponse));
-              }
-              if (data.done) {
-                setMessages(prev => [...prev, { role: 'ai', content: cleanResponse(fullResponse) }]);
-                setIsLoading(false);
-                setLoadingStatus('');
-                setCurrentResponse('');
-              }
-              if (data.error) {
-                throw new Error(data.error);
-              }
-            } catch (e) {
-              console.error('Error parsing SSE data:', e);
-            }
-          }
-        }
-      }
     } catch (error) {
       if (error.name === 'AbortError') {
         console.log('Request was cancelled');
@@ -211,12 +207,12 @@ function App() {
 
   return (
 
-   <div className='relative'>
-
+   <div className='relative w-full'>
+      <SlideOutButton />
          {/* Arc'BOT Button */}
          <button
           onClick={() => setIsChatOpen(true)}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black text-white px-8 py-4 rounded-lg shadow-lg hover:bg-gray-900 transition-colors text-xl"
+          className="arcbot_button"
         >
           Arc'BOT
         </button>
@@ -256,8 +252,6 @@ function App() {
                 className="w-screen h-auto object-cover rounded-lg shadow-xl"
                 style={{ maxHeight: '1200px' }}
               />
-
-
             </div>
           </main>
 
@@ -265,9 +259,6 @@ function App() {
             ©2025 All Rights Reserved
           </footer>
         </div>
-
-
-
       </div>
     </div>
     </div>
