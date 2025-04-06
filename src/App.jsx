@@ -5,6 +5,7 @@ import ChatbotWindow from './components/ChatbotWindow'
 import EventPlannerAgent from './components/EventPlannerAgent'
 import GrantProgramAgent from './components/GrantProgramAgent'
 import CommunityConnectorAgent from './components/CommunityConnectorAgent'
+import ImpactDashboard from './components/ImpactDashboard'
 import './App.css'
 
 function App() {
@@ -99,6 +100,9 @@ function App() {
                 className="responsive-image"
               />
             </div>
+
+            {/* Impact Dashboard */}
+            <ImpactDashboard />
           </main>
 
           <footer className="footer">
