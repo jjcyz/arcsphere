@@ -5,7 +5,7 @@ import './ChatbotWindow.css';
 export default function ChatbotWindow({ isOpen, onClose }) {
   const [messages, setMessages] = useState([
     { role: 'system', content: "You are a helpful assistant for Arc'teryx partners. You provide concise, informative answers." },
-    { role: 'ai', content: "Hello! I'm Arc'BOT, an AI agent built with Groq's LLM. How can I help you today?" }
+    { role: 'ai', content: "Hi! I'm Arc'BOT, your personal event coordinator. Let's plan a community meetup! What activity are you thinking of?" }
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
