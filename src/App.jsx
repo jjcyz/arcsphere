@@ -54,19 +54,19 @@ function App() {
    <div className='relative w-full'>
       <SlideOutButton onClick={toggleChatbot} />
       <button
-        className="fixed left-4 top-1/2 transform -translate-y-1/2 bg-black text-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-800 transition-colors text-sm"
+        className="arcbot_agent_button fixed left-4 top-1/2 transform -translate-y-1/2 bg-black text-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-800 transition-colors text-sm"
         onClick={toggleEventPlanner}
       >
         Event Planner
       </button>
       <button
-        className="fixed left-4 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-600 transition-colors text-sm mt-16"
+        className="arcbot_agent_button fixed left-4 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-600 transition-colors text-sm mt-16"
         onClick={toggleGrantProgram}
       >
         Grant Program
       </button>
       <button
-        className="fixed left-4 top-1/2 transform -translate-y-1/2 bg-gray-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-500 transition-colors text-sm mt-32"
+        className="arcbot_agent_button fixed left-4 top-1/2 transform -translate-y-1/2 bg-gray-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-gray-500 transition-colors text-sm mt-32"
         onClick={toggleCommunityConnector}
       >
         Community Connector

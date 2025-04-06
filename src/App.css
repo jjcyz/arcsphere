@@ -18,6 +18,13 @@
 
 }
 
+.arcbot_agent_button {
+
+	background-color: black;
+	color: white;
+
+}
+
 .arcbot_container {
   position: fixed;
   right: 0;
