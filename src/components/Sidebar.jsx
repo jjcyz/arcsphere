@@ -10,8 +10,8 @@ function Sidebar({ selectedModel, onModelChange }) {
           onChange={(e) => onModelChange(e.target.value)}
           className="w-full p-2 rounded bg-accent text-white border border-gray-600 focus:outline-none focus:border-blue-500"
         >
-          <option value="deepseek-r1:1.5b">deepseek-r1:1.5b</option>
-          <option value="deepseek-r1:3b">deepseek-r1:3b</option>
+          <option value="llama3-70b-8192">LLaMA 3 70B</option>
+          <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
         </select>
       </div>
 

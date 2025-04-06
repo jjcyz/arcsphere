@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 const OLLAMA_BASE_URL = 'http://localhost:11434';
-const TIMEOUT = 120000; // Increased to 120 seconds timeo
+const TIMEOUT = 120000;
 
 console.log(process.env.VITE_GROQ_API_KEY);
 console.log("hello");
@@ -59,7 +59,7 @@ app.post('/api/chat', async (req, res) => {
 
     // Make request to Ollama with responseType: 'stream'
     const response = await axios.post(`https://api.groq.com/openai/v1/chat/completions`, {
-        "model": "deepseek-r1-distill-qwen-32b",
+        "model": "llama3-70b-8192",
         "headers": {
             "Authorization": `Bearer ${process.env.VITE_GROQ_API_KEY}`
         },

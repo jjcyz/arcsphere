@@ -44,9 +44,9 @@ export default function ImpactDashboard() {
 
   const impactStats = [
     { label: 'Community Members', value: '2,500+' },
-    { label: 'Events Hosted', value: '120+' },
-    { label: 'Grants Awarded', value: '$450K+' },
-    { label: 'Partners Connected', value: '85+' }
+    { label: 'Events Hosted', value: '20+' },
+    { label: 'Grant Awarded', value: '$12K+' },
+    { label: 'Partners Connected', value: '45+' }
   ];
 
   const getMonthName = (monthIndex) => {

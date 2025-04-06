@@ -4,7 +4,26 @@ A community platform for Arc'teryx partners to build communities, seek support, 
 
 ## Overview
 
-Arc'Sphere is a modern web application that helps Arc'teryx partners connect and collaborate. The platform features an AI-powered chatbot (Arc'BOT) built with Groq's LLM technology to provide intelligent assistance to users.
+Arc'Sphere is a modern web application that helps Arc'teryx partners connect and collaborate. The platform features multiple AI-powered agents built with Groq's LLM technology to provide intelligent assistance to users for various community-building activities.
+
+## Technologies Used
+
+- **Frontend:**
+  - React.js with Vite for fast development and building
+  - Tailwind CSS for styling
+  - Custom CSS for specialized components
+
+- **Backend:**
+  - Node.js with Express for API endpoints
+  - Groq API for LLM-powered responses
+
+- **AI Models:**
+  - Groq's LLaMA 3 70B model for natural language processing
+  - Custom system prompts for specialized agent behaviors
+
+- **Deployment:**
+  - GitHub for version control
+  - Environment variables for secure API key management
 
 ## Prerequisites
 
@@ -57,29 +76,61 @@ The application should now be running at:
 
 ## Features
 
-- 🤖 Arc'BOT: AI-powered chatbot built with Groq's LLM technology
-- 💬 Real-time chat interface with message history
-- 🎨 Modern, responsive UI with dark theme
-- 🔄 Streaming responses for a smooth user experience
-- ⚡ Fast and responsive interface
+### AI Agents
+- **Arc'BOT**: General-purpose AI assistant for Arc'teryx partners
+- **Event Planner Agent**: Specialized agent for planning community events
+- **Grant Program Agent**: AI assistant for navigating grant applications
+- **Community Connector Agent**: Agent for matching community members with similar interests
+
+### Dashboard Features
+- 📅 Interactive calendar showing upcoming events
+- 📊 Impact statistics showing community growth
+- 📋 Upcoming events display with filtering by type
+- 🔍 Event details including dates, locations, and descriptions
+
+### Event Types
+- 🏔️ Meetups: Community gatherings and social events
+- 🧗‍♂️ Expeditions: Outdoor adventures and trips
+- 🛠️ Workshops: Educational sessions and skill-building events
+- 💰 Grant Deadlines: Important dates for grant applications
 
 ## Project Structure
 
 - `src/` - Frontend React application
-  - `components/` - React components including the ChatbotWindow
+  - `components/` - React components
+    - `ChatbotWindow.jsx` - General AI assistant interface
+    - `EventPlannerAgent.jsx` - Event planning assistant
+    - `GrantProgramAgent.jsx` - Grant program assistant
+    - `CommunityConnectorAgent.jsx` - Community matching assistant
+    - `ImpactDashboard.jsx` - Dashboard for events and statistics
+    - `SlideOutButton.jsx` - UI component for opening the chatbot
   - `App.jsx` - Main application component
   - `App.css` - Main application styles
 - `server/` - Backend Express server
   - `index.js` - Server implementation with API endpoints
 - `public/` - Static assets including images
 
+## AI Implementation
+
+The application uses Groq's LLaMA 3 70B model with the following configurations:
+- `max_tokens`: 1024 for comprehensive responses
+- `temperature`: 0.7 for balanced creativity and consistency
+- Custom system prompts for each agent to define their specific roles and capabilities
+
+Each agent has a specialized system prompt that guides its behavior:
+- **Arc'BOT**: General assistant for Arc'teryx partners
+- **Event Planner**: Focused on event planning, logistics, and promotion
+- **Grant Program**: Specialized in grant application guidance
+- **Community Connector**: Designed for matching community members
+
 ## Usage
 
 1. Open the application in your browser
-2. Click the slide-out button to open the chat interface
+2. Use the Arc'BOT button or specialized agent buttons to open the desired AI assistant
 3. Type your question or request in the input field
-4. Wait for Arc'BOT to generate a response
+4. Wait for the AI agent to generate a response
 5. Use the "Cancel" button if a request is taking too long
+6. Explore the Impact Dashboard to view upcoming events and community statistics
 
 ## Troubleshooting
 
@@ -98,6 +149,6 @@ If you encounter any issues:
    - Adjust the timeout settings in `server/index.js` if needed
    - Clear browser cache
 
-## Contributing
+## License
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+©2025 All Rights Reserved
