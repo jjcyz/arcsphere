@@ -1,10 +1,8 @@
 # Arc'Sphere
 
-A community platform for Arc'teryx partners to build communities, seek support, answer questions, and plan meetups. Powered by Groq's LLM technology.
-
 ## Overview
 
-Arc'Sphere is a modern web application that helps Arc'teryx partners connect and collaborate. The platform features multiple AI-powered agents built with Groq's LLM technology to provide intelligent assistance to users for various community-building activities.
+Arc'Sphere is a modern web application that helps users connect and collaborate. The platform features multiple AI-powered agents built with Groq's LLM technology to provide intelligent assistance for various community-building activities.
 
 ## Technologies Used
 
@@ -77,7 +75,7 @@ The application should now be running at:
 ## Features
 
 ### AI Agents
-- **Arc'BOT**: General-purpose AI assistant for Arc'teryx partners
+- **Arc'BOT**: General-purpose AI assistant
 - **Event Planner Agent**: Specialized agent for planning community events
 - **Grant Program Agent**: AI assistant for navigating grant applications
 - **Community Connector Agent**: Agent for matching community members with similar interests
@@ -118,7 +116,7 @@ The application uses Groq's LLaMA 3 70B model with the following configurations:
 - Custom system prompts for each agent to define their specific roles and capabilities
 
 Each agent has a specialized system prompt that guides its behavior:
-- **Arc'BOT**: General assistant for Arc'teryx partners
+- **Arc'BOT**: General assistant 
 - **Event Planner**: Focused on event planning, logistics, and promotion
 - **Grant Program**: Specialized in grant application guidance
 - **Community Connector**: Designed for matching community members
