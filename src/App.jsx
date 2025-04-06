@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Sidebar from './components/Sidebar'
-import ChatMessage from './components/ChatMessage'
 
-function App() {
-  const [selectedModel, setSelectedModel] = useState('deepseek-r1:1.5b')
+function ChatbotWindow({ isOpen, onClose, selectedModel, setSelectedModel }) {
   const [messages, setMessages] = useState([
     { role: 'ai', content: "Hi! I'm DeepSeek. How can I help you today? 💻" }
   ])
@@ -16,35 +14,9 @@ function App() {
   const requestIdRef = useRef(null)
   const messagesEndRef = useRef(null)
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
-
   useEffect(() => {
-    scrollToBottom()
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, currentResponse])
-
-  const cancelRequest = async () => {
-    if (requestIdRef.current) {
-      try {
-        await fetch('/api/cancel', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ requestId: requestIdRef.current }),
-        });
-      } catch (error) {
-        console.error('Error canceling request:', error);
-      }
-    }
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    setIsLoading(false);
-    setLoadingStatus('');
-    setCurrentResponse('');
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -58,7 +30,6 @@ function App() {
     setCurrentResponse('')
     setError(null)
 
-    // Create new AbortController for this request
     abortControllerRef.current = new AbortController();
     requestIdRef.current = Date.now().toString();
 
@@ -85,6 +56,7 @@ function App() {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
+      let fullResponse = '';
 
       while (true) {
         const { value, done } = await reader.read();
@@ -98,10 +70,11 @@ function App() {
             try {
               const data = JSON.parse(line.slice(6));
               if (data.response) {
-                setCurrentResponse(prev => prev + data.response);
+                fullResponse += data.response;
+                setCurrentResponse(fullResponse);
               }
               if (data.done) {
-                setMessages(prev => [...prev, { role: 'ai', content: currentResponse }]);
+                setMessages(prev => [...prev, { role: 'ai', content: fullResponse }]);
                 setIsLoading(false);
                 setLoadingStatus('');
                 setCurrentResponse('');
@@ -132,75 +105,140 @@ function App() {
     }
   }
 
-  return (
-    <div className="flex h-screen">
-      <Sidebar
-        selectedModel={selectedModel}
-        onModelChange={setSelectedModel}
-      />
+  const cancelRequest = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    setIsLoading(false);
+    setCurrentResponse('');
+  };
 
-      <main className="flex-1 flex flex-col">
-        <header className="p-4 border-b border-accent">
-          <h1 className="text-2xl font-bold">🧠 DeepSeek Code Companion</h1>
-          <p className="text-sm text-gray-400">🚀 Your AI Pair Programmer with Debugging Superpowers</p>
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed right-4 bottom-20 w-96 h-[600px] bg-black rounded-lg shadow-xl flex flex-col overflow-hidden">
+      <div className="flex justify-between items-center p-4 bg-gray-900 border-b border-gray-800">
+        <h2 className="text-lg font-semibold text-white">Arc'BOT</h2>
+        <button onClick={onClose} className="text-gray-400 hover:text-white">
+          ✕
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4">
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            className={`chat-message ${message.role === 'user' ? 'user-message' : 'ai-message'}`}
+          >
+            <div className="message-content">
+              {message.content}
+            </div>
+          </div>
+        ))}
+        {currentResponse && (
+          <div className="chat-message ai-message">
+            <div className="message-content">
+              {currentResponse}
+            </div>
+          </div>
+        )}
+        {error && (
+          <div className="chat-message error-message">
+            <div className="text-sm text-red-400">
+              {error}
+            </div>
+          </div>
+        )}
+        {isLoading && (
+          <div className="chat-message ai-message">
+            <div className="flex items-center space-x-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+              <div className="text-sm text-gray-300">
+                {loadingStatus}
+              </div>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      <form onSubmit={handleSubmit} className="p-4 bg-gray-900 border-t border-gray-800">
+        <div className="flex space-x-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Prompt Me Here!"
+            className="flex-1 px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:border-blue-500"
+            disabled={isLoading}
+          />
+          <button
+            type={isLoading ? "button" : "submit"}
+            onClick={isLoading ? cancelRequest : undefined}
+            className={`px-4 py-2 rounded-lg ${
+              isLoading
+                ? "bg-red-600 hover:bg-red-700"
+                : "bg-blue-600 hover:bg-blue-700"
+            } text-white transition-colors`}
+          >
+            {isLoading ? "Cancel" : "→"}
+          </button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+function App() {
+  const [selectedModel, setSelectedModel] = useState('deepseek-r1:1.5b')
+  const [isChatOpen, setIsChatOpen] = useState(false)
+
+  return (
+    <div className="min-h-screen bg-gray-900">
+      {/* Landing Page */}
+      <div className="container mx-auto px-4 py-8">
+        <header className="mb-12">
+          <img src="/arc-sphere-logo.png" alt="Arc'SPHERE" className="h-8" />
         </header>
 
-        <div className="flex-1 overflow-y-auto p-4">
-          {messages.map((message, index) => (
-            <ChatMessage key={index} message={message} />
-          ))}
-          {currentResponse && (
-            <div className="chat-message ai-message p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-              <div className="text-sm text-gray-600 dark:text-gray-300">
-                {currentResponse}
-              </div>
-            </div>
-          )}
-          {error && (
-            <div className="chat-message error-message p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-              <div className="text-sm text-red-600 dark:text-red-400">
-                {error}
-              </div>
-            </div>
-          )}
-          {isLoading && (
-            <div className="chat-message ai-message p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-              <div className="flex items-center space-x-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-                <div className="text-sm text-gray-600 dark:text-gray-300">
-                  {loadingStatus}
-                </div>
-              </div>
-              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                This may take a few moments as the model processes your request locally...
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+        <main className="max-w-4xl mx-auto">
+          <h1 className="text-4xl font-bold text-white mb-4">Welcome to the 'Sphere!</h1>
+          <p className="text-gray-400 text-lg mb-8">
+            Subheading that sets up context, shares more info about the website, or
+            generally gets people psyched to keep scrolling.
+          </p>
 
-        <form onSubmit={handleSubmit} className="input-container">
-          <div className="flex space-x-2">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your question here..."
-              className="chat-input flex-1"
-              disabled={isLoading}
+          <div className="relative max-w-2xl mx-auto">
+            <img
+              src="/images/image.png"
+              alt="Mountain Climbers"
+              className="w-full h-auto object-cover rounded-lg shadow-xl"
+              style={{ maxHeight: '1200px' }}
             />
-            {isLoading && (
-              <button
-                type="button"
-                onClick={cancelRequest}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-              >
-                Cancel
-              </button>
-            )}
+
+            {/* Arc'BOT Button */}
+            <button
+              onClick={() => setIsChatOpen(true)}
+              className="fixed right-4 bottom-4 bg-black text-white px-6 py-3 rounded-lg shadow-lg hover:bg-gray-900 transition-colors"
+            >
+              Arc'BOT
+            </button>
           </div>
-        </form>
-      </main>
+        </main>
+
+        {/* Chatbot Window */}
+      <ChatbotWindow
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        selectedModel={selectedModel}
+        setSelectedModel={setSelectedModel}
+      />
+
+        <footer className="mt-16 text-center text-gray-500">
+          ©2025 All Rights Reserved
+        </footer>
+      </div>
+
     </div>
   )
 }

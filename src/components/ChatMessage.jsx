@@ -3,7 +3,7 @@ function ChatMessage({ message }) {
     <div className={`chat-message ${message.role === 'user' ? 'user-message' : 'ai-message'}`}>
       <div className="flex items-start">
         <div className="flex-shrink-0 mr-3">
-          {message.role === 'user' ? '👤' : '🤖'}
+          {message.role === 'user' ? '👤 Me' : '🤖 DeepSeek'}
         </div>
         <div className="flex-1">
           <div className="prose prose-invert max-w-none">
