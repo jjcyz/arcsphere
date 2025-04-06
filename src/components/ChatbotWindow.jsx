@@ -4,7 +4,7 @@ import './ChatbotWindow.css';
 
 export default function ChatbotWindow({ isOpen, onClose }) {
   const [messages, setMessages] = useState([
-    { role: 'ai', content: "Hi! I'm DeepSeek. How can I help you today? 💻" }
+    { role: 'ai', content: "Hi! I'm Arc'BOT. How can I help you today? 💻" }
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
