@@ -74,7 +74,7 @@ export default function ChatbotWindow({ isOpen, onClose }) {
         messages: formattedMessages,
         model: "llama3-70b-8192",
         max_tokens: 1024, // Increased max tokens for more detailed responses
-        temperature: 0.7 // Low temperature for more deterministic responses
+        temperature: 0 // Low temperature for more deterministic responses
       });
 
       console.log(response.choices[0]?.message?.content || "");
