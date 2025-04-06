@@ -7,7 +7,7 @@ export default function SlideOutButton() {
 
   return (
 		<div className="arcbot_container">
-    <div className="arcbot_button">
+    <div className="">
 				 {/* Arc'BOT Button */}
          <button
           onClick={() => setIsOpen(!isOpen)}
