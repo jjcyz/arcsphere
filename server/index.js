@@ -59,7 +59,7 @@ app.post('/api/chat', async (req, res) => {
 
     // Make request to Ollama with responseType: 'stream'
     const response = await axios.post(`https://api.groq.com/openai/v1/chat/completions`, {
-        "model": "llama3-70b-8192",
+        "model": "llama-3.3-70b-versatile",
         "headers": {
             "Authorization": `Bearer ${process.env.VITE_GROQ_API_KEY}`
         },
