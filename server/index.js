@@ -12,9 +12,6 @@ app.use(express.json());
 const OLLAMA_BASE_URL = 'http://localhost:11434';
 const TIMEOUT = 120000;
 
-console.log(process.env.VITE_GROQ_API_KEY);
-console.log("hello");
-
 // Store active requests
 const activeRequests = new Map();
 
