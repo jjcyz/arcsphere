@@ -6,6 +6,7 @@ import EventPlannerAgent from './components/EventPlannerAgent'
 import GrantProgramAgent from './components/GrantProgramAgent'
 import CommunityConnectorAgent from './components/CommunityConnectorAgent'
 import ImpactDashboard from './components/ImpactDashboard'
+import AnalyticsDashboard from './components/AnalyticsDashboard'
 import './App.css'
 
 function App() {
@@ -103,6 +104,9 @@ function App() {
 
             {/* Impact Dashboard */}
             <ImpactDashboard />
+
+            {/* Analytics Dashboard */}
+            <AnalyticsDashboard />
           </main>
 
           <footer className="footer">

@@ -1,13 +1,54 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const { KafkaProducer } = require('./kafka/producer');
+const logger = require('./logging/elasticsearch-logger');
+const analyticsRouter = require('./analytics/mock-analytics-api');
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5001;
 
+// Initialize Kafka producer
+const kafkaProducer = new KafkaProducer();
+
 app.use(cors());
 app.use(express.json());
+
+// Analytics routes
+app.use('/api', analyticsRouter);
+
+// Middleware for logging and analytics
+app.use((req, res, next) => {
+  const startTime = Date.now();
+  const requestId = Date.now().toString();
+
+  // Add request ID to response headers
+  res.setHeader('X-Request-ID', requestId);
+
+  // Log request
+  logger.logAPIRequest(
+    req.method,
+    req.url,
+    res.statusCode,
+    Date.now() - startTime,
+    req.headers['user-id'],
+    req.ip
+  );
+
+  // Send user interaction to Kafka (disabled for demo)
+  // kafkaProducer.sendUserInteraction(
+  //   req.headers['user-id'] || 'anonymous',
+  //   `${req.method} ${req.url}`,
+  //   {
+  //     userAgent: req.headers['user-agent'],
+  //     ip: req.ip,
+  //     requestId
+  //   }
+  // );
+
+  next();
+});
 
 const OLLAMA_BASE_URL = 'http://localhost:11434';
 const TIMEOUT = 120000;
@@ -28,6 +69,7 @@ const formatConversationHistory = (history) => {
 app.post('/api/chat', async (req, res) => {
   const requestId = Date.now().toString();
   activeRequests.set(requestId, true);
+  const startTime = Date.now();
 
   // Set up SSE headers for streaming
   res.setHeader('Content-Type', 'text/event-stream');
@@ -41,6 +83,9 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ error: 'Message and model are required' });
     }
 
+    const userId = req.headers['user-id'] || 'anonymous';
+
+    logger.logAIRequest(userId, model, message, 0, true);
     console.log('Received request with:', { model, message, historyLength: history?.length });
 
     // Format the conversation history
@@ -97,6 +142,17 @@ app.post('/api/chat', async (req, res) => {
     // When the stream ends
     response.data.on('end', () => {
       activeRequests.delete(requestId);
+      const responseTime = Date.now() - startTime;
+
+      // Log successful AI response
+      logger.logAIRequest(userId, model, message, responseTime, true);
+
+      // Send AI response to Kafka for analytics (disabled for demo)
+      // kafkaProducer.sendAIResponse(userId, model, message, "Streamed response", {
+      //   responseTime,
+      //   requestId
+      // });
+
       res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
       res.end();
     });
@@ -111,6 +167,17 @@ app.post('/api/chat', async (req, res) => {
 
   } catch (error) {
     activeRequests.delete(requestId);
+    const responseTime = Date.now() - startTime;
+
+    // Log error
+    logger.logError(error, {
+      userId,
+      model,
+      message,
+      responseTime,
+      requestId
+    });
+
     console.error('Error details:', {
       message: error.message,
       code: error.code,
@@ -158,7 +225,22 @@ app.post('/api/cancel', (req, res) => {
   }
 });
 
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`Server running on port ${port}`);
   console.log(`Make sure Ollama is running at ${OLLAMA_BASE_URL}`);
+
+    // Initialize Kafka producer (disabled for demo)
+  // await kafkaProducer.connect();
+
+  // Log server startup
+  logger.logSystemEvent('server_startup', {
+    port,
+    timestamp: new Date().toISOString()
+  });
+
+  // Send system event to Kafka (disabled for demo)
+  // kafkaProducer.sendSystemEvent('server_startup', {
+  //   port,
+  //   timestamp: new Date().toISOString()
+  // });
 });

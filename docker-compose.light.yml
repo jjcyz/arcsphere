@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Elasticsearch (lighter version)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    container_name: arcsphere-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+      - bootstrap.memory_lock=true
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - arcsphere-network
+
+  # Kafka (single broker)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: arcsphere-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - arcsphere-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: arcsphere-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+    networks:
+      - arcsphere-network
+
+volumes:
+  elasticsearch_data:
+    driver: local
+
+networks:
+  arcsphere-network:
+    driver: bridge
