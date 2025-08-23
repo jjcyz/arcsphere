@@ -25,6 +25,9 @@ Arc'Sphere is a modern web application that helps users connect and collaborate.
   - **Logstash**: Log aggregation and processing pipeline
   - **Kibana**: Data visualization and dashboard creation
   - **Winston**: Structured logging with Elasticsearch transport
+    
+<img width="1183" height="678" alt="Screenshot 2025-08-22 at 22 40 21" src="https://github.com/user-attachments/assets/005fd895-5874-4f38-9647-fc4588e4123b" />
+
 
 - **Deployment:**
   - GitHub for version control
